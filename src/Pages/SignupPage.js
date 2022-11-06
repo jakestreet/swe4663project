@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useEffect} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,7 +17,7 @@ const theme = createTheme();
 
 export default function SignupPage() {
 
-  const { signup } = useAuth();
+  const { signup, currentUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -36,6 +36,11 @@ export default function SignupPage() {
     e.preventDefault();
     navigate("/");
   }
+
+  useEffect(() => {
+    if (currentUser)
+      navigate("/home");
+  }, [currentUser, navigate])
 
   return (
     <ThemeProvider theme={theme}>
