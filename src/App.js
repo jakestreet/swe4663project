@@ -6,6 +6,7 @@ import PlaceholderPage from './Pages/PlaceholderPage';
 import SignupPage from "./Pages/SignupPage";
 import LoginPage from "./Pages/LoginPage";
 import ForgotPage from './Pages/ForgotPage';
+import NavBar from './components/NavBar';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Route index element={<LoginPage />}></Route>
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
-          <Route element={<PrivateRoutes />}>
+          <Route element={[<NavBar key={"nav"} />, <PrivateRoutes key={"private"} />]}>
             {/*Private Routes go here*/}
             <Route path="home" element={<PlaceholderPage />} />
           </Route>
