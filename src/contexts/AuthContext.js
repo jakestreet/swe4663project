@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { auth } from '../components/utils/firebase'
-import { confirmPasswordReset, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth, authCreate, app } from '../components/utils/firebase'
+import { confirmPasswordReset, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, getAdditionalUserInfo } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const AuthContext = React.createContext();
-
+const db = getFirestore(app);
 export function useAuth() {
     return useContext(AuthContext)
 }
@@ -13,16 +14,38 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const provider = new GoogleAuthProvider();
 
-    function signup(email, password) {
-        return createUserWithEmailAndPassword(auth, email, password)
+    async function signup(name, email, password) {
+        try {
+            await createUserWithEmailAndPassword(authCreate, email, password)
+            await setDoc(doc(db, "users", email), {
+                name: name,
+            })
+            authCreate.signOut();
+            return updateProfile(authCreate.currentUser, { displayName: name })
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     function login(email, password) {
-        return signInWithEmailAndPassword(auth, email, password)
+        try {
+            return signInWithEmailAndPassword(auth, email, password)
+        } catch (e) {
+            console.log(e);
+        }
     }
 
-    function googleLogin() {
-        signInWithPopup(auth, provider);
+    async function googleLogin() {
+        try {
+            const googleSignIn = await signInWithPopup(auth, provider)
+            if (getAdditionalUserInfo(googleSignIn).isNewUser) {
+                await setDoc(doc(db, "users", googleSignIn.user.email), {
+                    name: googleSignIn.user.displayName,
+                })
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     function logout() {
@@ -49,6 +72,7 @@ export function AuthProvider({ children }) {
     const value = {
         currentUser,
         loading,
+        db,
         signup,
         login,
         logout,

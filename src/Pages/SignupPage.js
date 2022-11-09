@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -20,22 +20,23 @@ export default function SignupPage() {
   const { signup, currentUser } = useAuth();
   const navigate = useNavigate();
 
+  const LoginNav = (e) => {
+    e.preventDefault();
+    navigate("/");
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get('password') === data.get('passwordConfirm')) {
-      const signUpResponse = await signup(data.get('email'), data.get('password')).then(alert("Your account has been created. You may now login."));
-      console.log(signUpResponse);
+      await signup(data.get('name'), data.get('email'), data.get('password'))
+        .then(alert("Your account has been created. You may now Sign In."))
+      LoginNav(event);
     }
     else {
       alert("Passwords must match!");
     }
   };
-
-  const LoginNav = (e) => {
-    e.preventDefault();
-    navigate("/");
-  }
 
   useEffect(() => {
     if (currentUser)
@@ -65,11 +66,20 @@ export default function SignupPage() {
               margin="normal"
               required
               fullWidth
+              id="name"
+              label="Full Name"
+              name="name"
+              autoComplete="name"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="email"
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
             />
             <TextField
               margin="normal"

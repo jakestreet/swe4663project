@@ -16,7 +16,7 @@ function App() {
           <Route index element={<LoginPage />}></Route>
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
-          <Route element={[<SideBar key={"side"} />, <div style={{marginLeft: 240}}><PrivateRoutes key={"private"} /></div>]}>
+          <Route element={[<SideBar key={"side"} />, <div key={'div'} style={{ marginLeft: 240 }}><PrivateRoutes key={"private"} /></div>]}>
             {/*Private Routes go here*/}
             <Route path="home" element={<PlaceholderPage />} />
           </Route>

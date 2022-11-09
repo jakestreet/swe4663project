@@ -1,11 +1,14 @@
-import logo from '../assets/logo.svg';
+import { Button } from '@mui/material';
+import { useAuth } from "../contexts/AuthContext";
 
 export default function PlaceholderPage() {
+  const { currentUser, logout } = useAuth();
   return (
     <div className="App">
       <header className="App-header">
         <h1>Home</h1>
-        <img src={logo} className="App-logo" alt="logo" />
+        <h5>Current User: {currentUser?.displayName}</h5>
+        <Button variant='contained' onClick={()=>logout()}>Logout</Button>
       </header>
     </div>
   )

@@ -29,8 +29,8 @@ export default function LoginPage() {
       const loginResponse = await login(data.get('email'), data.get('password')).then(navigate("/home"))
       console.log(loginResponse);
     }
-    catch (error) { 
-      alert(error.message) 
+    catch (error) {
+      alert(error.message)
     }
   };
 
