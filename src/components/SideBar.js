@@ -32,22 +32,24 @@ export default function SideBar() {
     >
           <Divider />
           <img style={{ width: 100, height: 100 }} src="/logo192.png" alt="Logo" />
-          <List>
-              <ListItemButton disablePadding onClick={() => navigate("/home")} selected={location.pathname === '/home'}>
+          <List sx={{height: "100vh", display: "flex", flexDirection: "column"}}>
+              <ListItem button disablePadding onClick={() => navigate("/home")} selected={location.pathname === '/home'}>
+                      <ListItemButton>
                       <ListItemIcon>
                           <ProjectsIcon />
                       </ListItemIcon>
                       <ListItemText primary="Projects" />
-              </ListItemButton>
+                      </ListItemButton>
+              </ListItem>
               <ListItem button disablePadding onClick={() => navigate("/reports")} selected={location.pathname === '/reports'}>
-                  <ListItemButton>
+                        <ListItemButton>
                       <ListItemIcon>
                           <ReportsIcon />
                       </ListItemIcon>
                       <ListItemText primary="Reports" />
-                  </ListItemButton>
+                      </ListItemButton>
               </ListItem>
-              <ListItem style={{ paddingTop: '200%' }} disablePadding>
+              <ListItem style={{ marginTop: 'auto' }} disablePadding>
                   <ListItemButton>
                       <ListItemIcon>
                           <ProfileIcon />
