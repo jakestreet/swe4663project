@@ -32,7 +32,7 @@ export default function SideBar() {
       anchor="left"
     >
           <Divider />
-          <img style={{ width: 100, height: 100 }} src="/fake_logo512.png" alt="Logo" />
+          <img style={{ width: 100, height: 100, marginLeft: 100, marginTop: 25, marginBottom: 50 }} src="/fake_logo512.png" alt="Logo" />
           <List sx={{height: "100vh", display: "flex", flexDirection: "column"}}>
               <ListItem button disablePadding onClick={() => navigate("/home")} selected={location.pathname === '/home'}>
                       <ListItemButton>
