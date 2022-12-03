@@ -7,7 +7,9 @@ import {
   TextField,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Typography,
+  CircularProgress
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { List, ListItemButton } from "@mui/material";
@@ -34,9 +36,10 @@ const defaultFormVals = {
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
-  const { currentUser, logout, db } = useAuth();
+  const { currentUser, logout, db, projectArray, getProjects, loading } = useAuth();
 
   const [users, setUsers] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -48,6 +51,7 @@ export default function ProjectListPage() {
         
       });
       setUsers([...userArray]);
+      getProjects();
     }
     getUsers();
   }, []);
@@ -69,6 +73,7 @@ export default function ProjectListPage() {
         createdBy: currentUser.email,
       }).then(async (val) => {
         setOpenModal(false);
+        getProjects();
       })
     }catch(error){
       console.error(error);
@@ -105,8 +110,8 @@ export default function ProjectListPage() {
     <div className="App">
       <header className="App-header">
         <h1>Project List Page</h1>
-        <List>
-          {projectList.map((project, index) => {
+        {!loading ? <List>
+          {projectArray.map((project, index) => {
             return (
               <ListItemButton
                 key={`${project}-${index}`}
@@ -118,7 +123,7 @@ export default function ProjectListPage() {
               </ListItemButton>
             );
           })}
-        </List>
+        </List> : <CircularProgress />}
         <Button
           variant="contained"
           onClick={() => {

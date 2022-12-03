@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { auth, authCreate, app } from '../components/utils/firebase'
 import { confirmPasswordReset, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, getAdditionalUserInfo } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDocs, collection } from "firebase/firestore";
 
 const AuthContext = React.createContext();
 const db = getFirestore(app);
@@ -13,6 +13,8 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true);
     const provider = new GoogleAuthProvider();
+    const [projectArray, setProjectArray] = useState([]);
+    const [projectName, setProjectName] = useState("");
 
     async function signup(name, email, password) {
         try {
@@ -60,6 +62,16 @@ export function AuthProvider({ children }) {
         return confirmPasswordReset(auth, oobCode, newPassword)
     }
 
+    async function getProjects() {
+        const querySnapshot = await getDocs(collection(db, "projects"));
+        const tempProjectArray = [];
+        querySnapshot.forEach((doc) => {
+          tempProjectArray.push(doc.data());
+        });
+        setProjectArray(tempProjectArray);
+        setProjectName(tempProjectArray[0].name);
+      }
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
@@ -78,7 +90,11 @@ export function AuthProvider({ children }) {
         logout,
         forgotPassword,
         resetPassword,
-        googleLogin
+        googleLogin,
+        projectArray,
+        projectName,
+        setProjectName,
+        getProjects,
     }
 
     return (

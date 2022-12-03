@@ -16,9 +16,9 @@ import { collection, getDocs } from "firebase/firestore";
 import Card from "@mui/material/Card";
 
 export default function ReportsPage() {
-  const { db } = useAuth();
+  const { db, projectArray, getProjects} = useAuth();
   const [projectName, setProjectName] = useState("");
-  const [projectArray, setProjectArray] = useState([]);
+  // const [projectArray, setProjectArray] = useState([]);
 
   const handleChange = (event) => {
     setProjectName(event.target.value);
@@ -73,19 +73,15 @@ export default function ReportsPage() {
     });
   }
 
+  function generateReport(logArray) {
+    logArray.forEach((element) => {
+
+    })
+  }
+
   useEffect(() => {
-    async function getProjects() {
-      const querySnapshot = await getDocs(collection(db, "projects"));
-      const tempProjectArray = [];
-      querySnapshot.forEach((doc) => {
-        tempProjectArray.push(doc.data());
-        console.log(doc.data());
-      });
-      setProjectArray(tempProjectArray);
-      setProjectName(tempProjectArray[0].name);
-    }
     getProjects();
-  }, [db]);
+  }, [getProjects]);
 
   return (
     <div
