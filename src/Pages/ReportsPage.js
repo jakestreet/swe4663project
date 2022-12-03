@@ -92,10 +92,11 @@ export default function ReportsPage() {
     })
   }
 
-  // useEffect(() => {
-  //   getProjects().then((name) => setProjectName(name));
+  useEffect(() => {
+    // getProjects().then((name) => setProjectName(name));
+    getProjects();
     
-  // }, [getProjects]);
+  }, []);
 
   return (
     <div
@@ -134,8 +135,8 @@ export default function ReportsPage() {
           <FormControl sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-select-small">Projects</InputLabel>
             <Select
-              value={projectName ?? "Test"}
-              labelId="projects-select"
+              // value={projectName}
+              // labelId="projects-select"
               label="Projects"
               onChange={handleChange}
             >

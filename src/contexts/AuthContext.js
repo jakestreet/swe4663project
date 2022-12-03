@@ -71,8 +71,8 @@ export function AuthProvider({ children }) {
         setProjectArray(tempProjectArray);
         
         console.log("ran")
-        if(tempProjectArray.length != 0)
-            return tempProjectArray[0].name;
+        // if(tempProjectArray.length != 0)
+        //     return tempProjectArray[0].name;
       }
 
     useEffect(() => {
