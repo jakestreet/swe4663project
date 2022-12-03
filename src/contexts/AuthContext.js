@@ -69,7 +69,10 @@ export function AuthProvider({ children }) {
           tempProjectArray.push(doc.data());
         });
         setProjectArray(tempProjectArray);
-        setProjectName(tempProjectArray[0].name);
+        
+        console.log("ran")
+        if(tempProjectArray.length != 0)
+            return tempProjectArray[0].name;
       }
 
     useEffect(() => {

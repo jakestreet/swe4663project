@@ -9,7 +9,8 @@ import {
   InputLabel,
   FormControl,
   Typography,
-  CircularProgress
+  CircularProgress,
+  Divider
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { List, ListItemButton } from "@mui/material";
@@ -113,7 +114,7 @@ export default function ProjectListPage() {
         {!loading ? <List>
           {projectArray.map((project, index) => {
             return (
-              <ListItemButton
+             <> <ListItemButton
                 key={`${project}-${index}`}
                 onClick={() => {
                   navigate("/home/project-overview", { state: project });
@@ -121,6 +122,8 @@ export default function ProjectListPage() {
               >
                 {project.name}
               </ListItemButton>
+              <Divider sx={{backgroundColor: "white"}} />
+              </>
             );
           })}
         </List> : <CircularProgress />}

@@ -10,8 +10,8 @@ export default function ProjectOverviewPage() {
   return (
     <div className="App">
         <Typography variant="h2">{state.name}</Typography>
-        <Typography variant = "h4"> Created by: {state.createdBy} </Typography>
-        <Typography variant = "h4"> {state.description} </Typography>
+        {/* <Typography variant = "h4"> Created by: {state.createdBy} </Typography> */}
+        <Typography variant="h4"> {state.description} </Typography>
     </div>
   )
 }

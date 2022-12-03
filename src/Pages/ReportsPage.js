@@ -17,15 +17,14 @@ import Card from "@mui/material/Card";
 
 export default function ReportsPage() {
   const { db, projectArray, getProjects} = useAuth();
-  const [projectName, setProjectName] = useState("");
-  // const [projectArray, setProjectArray] = useState([]);
+  const [projectName, setProjectName] = useState();
+  const [rowArray, setRowArray] = useState([]);
 
   const handleChange = (event) => {
     setProjectName(event.target.value);
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 90 },
     {
       field: "user",
       headerName: "User",
@@ -43,8 +42,8 @@ export default function ReportsPage() {
       flex: 1,
     },
     {
-      field: "tasks",
-      headerName: "Tasks Worked On",
+      field: "task",
+      headerName: "Task Worked On",
       sortable: false,
       flex: 1,
     },
@@ -73,15 +72,30 @@ export default function ReportsPage() {
     });
   }
 
-  function generateReport(logArray) {
-    logArray.forEach((element) => {
+  function generateReport() {
+    var tempLogArray = [];
+    projectArray.forEach((element) => {
+      if(element.name === projectName)
+        tempLogArray = element.logs
+    })
+    populateTable(tempLogArray);
+  }
 
+  function populateTable(logArray) {
+    logArray.forEach((element) => {
+      rowArray.push({
+        user: element.createdBy,
+        category: element.category,
+        task: element.task,
+        timeSpent: element.timeSpent
+      })
     })
   }
 
-  useEffect(() => {
-    getProjects();
-  }, [getProjects]);
+  // useEffect(() => {
+  //   getProjects().then((name) => setProjectName(name));
+    
+  // }, [getProjects]);
 
   return (
     <div
@@ -120,7 +134,7 @@ export default function ReportsPage() {
           <FormControl sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-select-small">Projects</InputLabel>
             <Select
-              value={projectName}
+              value={projectName ?? "Test"}
               labelId="projects-select"
               label="Projects"
               onChange={handleChange}
@@ -132,7 +146,7 @@ export default function ReportsPage() {
         </div>
         <DataGrid
           style={{ backgroundColor: "#FFFFFF", height: "75vh" }}
-          rows={rows}
+          rows={rowArray}
           columns={columns}
           disableSelectionOnClick
           autoPageSize
