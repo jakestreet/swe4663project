@@ -10,10 +10,13 @@ import { Link } from 'react-router-dom';
 import ProjectsIcon from '@mui/icons-material/Business';
 import ReportsIcon from '@mui/icons-material/Folder';
 import ProfileIcon from '@mui/icons-material/Person';
+import { useNavigate, useLocation } from "react-router-dom";
 
 const drawerWidth = 300;
 
 export default function SideBar() {
+    const navigate = useNavigate();
+    const location = useLocation();
   return (
       <Drawer style={{ background: '#667DB9'}}
       sx={{
@@ -30,15 +33,13 @@ export default function SideBar() {
           <Divider />
           <img style={{ width: 100, height: 100 }} src="/logo192.png" alt="Logo" />
           <List>
-              <ListItem button disablePadding component={Link} to="/ProjectListPage">
-                  <ListItemButton>
+              <ListItemButton disablePadding onClick={() => navigate("/home")} selected={location.pathname === '/home'}>
                       <ListItemIcon>
                           <ProjectsIcon />
                       </ListItemIcon>
                       <ListItemText primary="Projects" />
-                  </ListItemButton>
-              </ListItem>
-              <ListItem button disablePadding component={Link} to="/ProjectOverviewPage">
+              </ListItemButton>
+              <ListItem button disablePadding onClick={() => navigate("/reports")} selected={location.pathname === '/reports'}>
                   <ListItemButton>
                       <ListItemIcon>
                           <ReportsIcon />
