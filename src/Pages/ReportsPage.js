@@ -81,15 +81,20 @@ export default function ReportsPage() {
     populateTable(tempLogArray);
   }
 
-  function populateTable(logArray) {
-    logArray.forEach((element) => {
-      rowArray.push({
+  function populateTable(logs) {
+    console.log(logs)
+    var tempRowArray = []
+    logs.forEach((element, index) => {
+      console.log(element)
+      tempRowArray.push({
+        id: index,
         user: element.createdBy,
         category: element.category,
         task: element.task,
         timeSpent: element.timeSpent
       })
     })
+    setRowArray(tempRowArray);
   }
 
   useEffect(() => {
@@ -102,7 +107,7 @@ export default function ReportsPage() {
     <div
       className="App"
       style={{
-        backgroundColor: "#282c34",
+        backgroundColor: "#FFFFFF",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -115,7 +120,7 @@ export default function ReportsPage() {
           alignItems: "center",
           justifyContent: "flex-start",
           fontSize: "calc(10px + 2vmin)",
-          color: "white",
+          color: "black",
         }}
       >
         Reports Page
@@ -129,21 +134,23 @@ export default function ReportsPage() {
           marginRight: "auto",
           padding: 2,
         }}
+        elevation={5}
         style={{ backgroundColor: "#FFFFFF" }}
       >
         <div style={{ display: "flex" }}>
           <FormControl sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-select-small">Projects</InputLabel>
             <Select
-              // value={projectName}
-              // labelId="projects-select"
+            dense
+              value={projectName != null ? projectName : "none"}
+              labelId="projects-select"
               label="Projects"
               onChange={handleChange}
             >
               {getMenuItems()}
             </Select>
           </FormControl>
-          <Button>Generate Reports</Button>
+          <Button onClick={() => generateReport() }>Generate Reports</Button>
         </div>
         <DataGrid
           style={{ backgroundColor: "#FFFFFF", height: "75vh" }}

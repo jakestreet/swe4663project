@@ -110,8 +110,8 @@ export default function ProjectListPage() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Project List Page</h1>
-        {!loading ? <List>
+        <Typography variant="h2" sx={{paddingBottom: "30px", paddingTop: "30px"}}>Projects</Typography>
+        {!loading ? <List sx={{width: "500px"}}>
           {projectArray.map((project, index) => {
             return (
              <> <ListItemButton
@@ -141,7 +141,7 @@ export default function ProjectListPage() {
         <Dialog open={openModal} onClose={handleClose} maxWidth="xl">
           <DialogTitle>Create Project</DialogTitle>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <DialogContent sx={{ width: "75vw" }}>
+            <DialogContent sx={{ width: "50vw" }}>
               <Controller
                 
                 control={control}
