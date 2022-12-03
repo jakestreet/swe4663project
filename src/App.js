@@ -18,7 +18,7 @@ function App() {
           <Route index element={<LoginPage />}></Route>
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
-          <Route element={[<SideBar key={"side"} />, <div key={'div'} style={{ marginLeft: 240 }}><PrivateRoutes key={"private"} /></div>]}>
+          <Route element={[<SideBar key={"side"} />, <div key={'div'} style={{ marginLeft: 300 }}><PrivateRoutes key={"private"} /></div>]}>
             <Route path="/home" element={<ProjectListPage />}/>
             <Route path="/home/project-overview" element={<ProjectOverviewPage />} />
             <Route path="/reports" element={<ReportsPage />} />

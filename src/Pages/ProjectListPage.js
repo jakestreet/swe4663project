@@ -1,4 +1,14 @@
-import { Button, Icon, IconButton, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  Icon,
+  IconButton,
+  Select,
+  TextField,
+  MenuItem,
+  InputLabel,
+  FormControl
+} from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { List, ListItemButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -9,58 +19,72 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Box } from "@mui/system";
+import { collection, getDocs, setDoc, doc, addDoc } from "firebase/firestore";
 
 const defaultFormVals = {
   name: "",
   description: "",
-  funcRequirements: [{ name: "" }],
-  nonFuncRequirements: [{ name: "" }],
-  risks: [{ name: "", status: "" }],
   createdBy: "",
+  projectOwner: "",
+  teamMembers: [],
 };
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, db } = useAuth();
+
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const snapshot = await getDocs(collection(db, "users"));
+      let userArray = [];
+      snapshot.forEach((doc) => {
+        let name = doc.data();
+        userArray.push({name: name.name, id: doc.id});
+        
+      });
+      setUsers([...userArray]);
+    }
+    getUsers();
+  }, []);
+
 
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm({
     defaultValues: defaultFormVals,
   });
 
-  const {
-    fields: funcFields,
-    append: appendFunc,
-    remove: removeFunc,
-  } = useFieldArray({
-    control,
-    name: "funcRequirements",
-  });
-
-  const {
-    fields: nonFuncFields,
-    append: appendNonFunc,
-    remove: removeNonFunc,
-  } = useFieldArray({
-    control,
-    name: "nonFuncRequirements",
-  });
-
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try{
+      await addDoc(collection(db, "projects"), {
+        ...data,
+        createdBy: currentUser.email,
+      }).then(async (val) => {
+        setOpenModal(false);
+      })
+    }catch(error){
+      console.error(error);
+    }
   };
 
   const [openModal, setOpenModal] = useState(false);
 
   const handleClickOpen = () => setOpenModal(true);
-  const handleClose = () => setOpenModal(false);
+  const handleClose = () => {
+    // if(isDirty){
+    //   if(window.confirm("Are you sure you want to close?")){
+        setOpenModal(false);
+    //   }
+    // }
+  };
 
   const projectList = [
     {
@@ -98,7 +122,6 @@ export default function ProjectListPage() {
         <Button
           variant="contained"
           onClick={() => {
-            console.log("test");
             handleClickOpen();
           }}
         >
@@ -112,6 +135,7 @@ export default function ProjectListPage() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogContent sx={{ width: "75vw" }}>
               <Controller
+                
                 control={control}
                 name="name"
                 shouldUnregister={true}
@@ -164,126 +188,99 @@ export default function ProjectListPage() {
                   />
                 )}
               />
-
-              <Box sx={{ display: "flex", flexDirection: "row" }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flexGrow: 2,
-                    padding: "10px",
-                  }}
-                >
-                  {funcFields.map((requirement, index) => {
-                    return (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          marginTop: "20px",
-                        }}
+              <Box sx={{display: "flex", justifyContent: "space-evenly", flexDirection: "row", paddingTop: "30px"}}>
+              <Controller
+                control={control}
+                name="projectOwner"
+                shouldUnregister={true}
+                rules={{
+                  required: {
+                    value: true,
+                    message: "Project Owner is required",
+                  },
+                }}
+                render={({
+                  field: { onChange, onBlur, value, name, ref },
+                  fieldState: { invalid, isTouched, isDirty, error },
+                  formState,
+                }) => {
+                  const getOptions = () => {
+                    return users.map((val, index) => {
+                      return (
+                        <MenuItem value={val.id} key={`${val.id}-${index}`}>
+                          {val.name}
+                        </MenuItem>
+                      );
+                    });
+                  };
+                  return (
+                      <TextField
+                        select
+                        sx={{ width: "250px" }}
+                        variant="outlined"
+                        label="Project Owner"
+                        id="projectOwner"
+                        onChange={onChange}
+                        value={value == null ? null : value}
                       >
-                        <Controller
-                          key={requirement.id}
-                          control={control}
-                          name={`funcRequirements.${index}.name`}
-                          shouldUnregister={true}
-                          rules={{
-                            required: { value: true, message: "Required" },
-                          }}
-                          render={({
-                            field: { onChange, onBlur, value, name, ref },
-                            fieldState: { invalid, isTouched, isDirty, error },
-                            formState,
-                          }) => (
-                            <TextField
-                              value={value}
-                              onChange={onChange}
-                              name={name}
-                              multiline
-                              helperText={error ? error.message : null}
-                              error={!!error}
-                              label="Functional Requirement"
-                              fullWidth
-                              variant="outlined"
-                            />
-                          )}
-                        />
-                        {index > 0 && (
-                          <IconButton onClick={() => removeFunc(index)}>
-                            <ClearIcon />
-                          </IconButton>
-                        )}
-                      </Box>
-                    );
-                  })}
-                  <IconButton onClick={() => appendFunc({ name: "" })}>
-                    {" "}
-                    <AddCircleOutlineIcon />
-                  </IconButton>
-                </Box>
+                        {getOptions()}
+                      </TextField>
+                  );
+                }}
+              />
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flexGrow: 2,
-                    padding: "10px",
-                  }}
-                >
-                  {nonFuncFields.map((requirement, index) => {
-                    return (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          marginTop: "20px",
+              <Controller
+                control={control}
+                name="teamMembers"
+                shouldUnregister={true}
+                rules={{
+                  required: {
+                    value: true,
+                    message: "Team Members are required",
+                  },
+                }}
+                render={({
+                  field: { onChange, onBlur, value, name, ref },
+                  fieldState: { invalid, isTouched, isDirty, error },
+                  formState,
+                }) => {
+                  const getOptions = () => {
+                    const test = ["test1", "test2", "test3"];
+                    return users.map((val, index) => {
+                      return (
+                        <MenuItem value={val.id} key={`${val.id}-${index}`}>
+                          {val.name}
+                        </MenuItem>
+                      );
+                    });
+                  };
+                  return (
+                    <FormControl>
+                      <InputLabel>Team Members</InputLabel>
+                      <Select
+                        multiple
+                        sx={{ width: "250px" }}
+                        variant="outlined"
+                        label="Team Members"
+                        labelId="teamMembers"
+                        id="teamMembers"
+                        onChange={(event, val) => {
+                          onChange(event);
                         }}
+                        value={value == null ? [""] : value}
                       >
-                        <Controller
-                          key={requirement.id}
-                          control={control}
-                          name={`nonFuncRequirements.${index}.name`}
-                          shouldUnregister={true}
-                          rules={{
-                            required: { value: true, message: "Required" },
-                          }}
-                          render={({
-                            field: { onChange, onBlur, value, name, ref },
-                            fieldState: { invalid, isTouched, isDirty, error },
-                            formState,
-                          }) => (
-                            <TextField
-                              value={value}
-                              onChange={onChange}
-                              name={name}
-                              multiline
-                              helperText={error ? error.message : null}
-                              error={!!error}
-                              label="Non Functional Requirement"
-                              fullWidth
-                              variant="outlined"
-                            />
-                          )}
-                        />
-                        {index > 0 && (
-                          <IconButton onClick={() => removeNonFunc(index)}>
-                            <ClearIcon />
-                          </IconButton>
-                        )}
-                      </Box>
-                    );
-                  })}
-                  <IconButton onClick={() => appendNonFunc({ name: "" })}>
-                    {" "}
-                    <AddCircleOutlineIcon />
-                  </IconButton>
-                </Box>
-              </Box>
+                        {getOptions()}
+                      </Select>
+                      </FormControl>
+                  );
+                }}
+              />
+            
+            </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button type="submit" variant="contained">
+              <Button type="submit" variant="contained" disabled={!isDirty}>
                 Save
               </Button>
             </DialogActions>
