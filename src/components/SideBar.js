@@ -18,20 +18,21 @@ export default function SideBar() {
     const navigate = useNavigate();
     const location = useLocation();
   return (
-      <Drawer style={{ background: '#667DB9'}}
+      <Drawer
       sx={{
         width: drawerWidth,
               flexShrink: 0,
         '& .MuiDrawer-paper': {
             width: drawerWidth,
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            background: '#667DB9'
         },
       }}
       variant="permanent"
       anchor="left"
     >
           <Divider />
-          <img style={{ width: 100, height: 100 }} src="/logo192.png" alt="Logo" />
+          <img style={{ width: 100, height: 100 }} src="/fake_logo512.png" alt="Logo" />
           <List sx={{height: "100vh", display: "flex", flexDirection: "column"}}>
               <ListItem button disablePadding onClick={() => navigate("/home")} selected={location.pathname === '/home'}>
                       <ListItemButton>
