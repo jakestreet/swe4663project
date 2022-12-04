@@ -10,7 +10,8 @@ import {
   FormControl,
   Typography,
   CircularProgress,
-  Divider
+  Divider,
+  Checkbox
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { List, ListItemButton } from "@mui/material";
@@ -37,7 +38,7 @@ const defaultFormVals = {
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
-  const { currentUser, logout, db, projectArray, getProjects, loading } = useAuth();
+  const { currentUser, logout, db, projectArray, getProjects, loading, setCurrentProject } = useAuth();
 
   const [users, setUsers] = useState([]);
   // const [loading, setLoading] = useState(true);
@@ -63,6 +64,8 @@ export default function ProjectListPage() {
     handleSubmit,
     watch,
     formState: { errors, isDirty },
+    setValue,
+    getValues
   } = useForm({
     defaultValues: defaultFormVals,
   });
@@ -85,28 +88,9 @@ export default function ProjectListPage() {
 
   const handleClickOpen = () => setOpenModal(true);
   const handleClose = () => {
-    // if(isDirty){
-    //   if(window.confirm("Are you sure you want to close?")){
+    console.log(getValues());
         setOpenModal(false);
-    //   }
-    // }
   };
-
-  const projectList = [
-    {
-      name: "Project 1",
-      createdBy: "test User",
-      description: "Project Description",
-      funcRequirements: ["Requirement 1", "Requirement 2"],
-      nonFuncRequirements: ["Requirement 1", "Requirement 2"],
-      risks: [
-        {
-          name: "Risk Name",
-          status: "status",
-        },
-      ],
-    },
-  ];
   return (
     <div className="App">
       <header className="App-header">
@@ -117,7 +101,8 @@ export default function ProjectListPage() {
              <> <ListItemButton
                 key={`${project}-${index}`}
                 onClick={() => {
-                  navigate("/home/project-overview", { state: project });
+                  setCurrentProject(project);
+                  navigate("/home/project-overview", {state: project.path});
                 }}
               >
                 {project.name}
@@ -215,24 +200,33 @@ export default function ProjectListPage() {
                   const getOptions = () => {
                     return users.map((val, index) => {
                       return (
-                        <MenuItem value={val.id} key={`${val.id}-${index}`}>
+                        <MenuItem value={val} key={`${val.id}-${index}`}>
                           {val.name}
                         </MenuItem>
                       );
                     });
                   };
                   return (
-                      <TextField
-                        select
-                        sx={{ width: "250px" }}
-                        variant="outlined"
-                        label="Project Owner"
-                        id="projectOwner"
-                        onChange={onChange}
-                        value={value == null ? null : value}
-                      >
-                        {getOptions()}
-                      </TextField>
+                    <FormControl>
+                    <InputLabel>Project Owner</InputLabel>
+                    <Select
+                      sx={{ width: "250px" }}
+                      variant="outlined"
+                      label="Project Owner"
+                      labelId="projectOwner"
+                      id="projectOwner"
+                      onChange={(event, val) => {
+                        onChange(event);
+                      }}
+                      defaultValue={''}
+                      value={getValues("projectOwner") ?? ""}
+                      renderValue={(value) => {
+                        return value.name;
+                      }}
+                    >
+                      {getOptions()}
+                    </Select>
+                    </FormControl>
                   );
                 }}
               />
@@ -253,29 +247,37 @@ export default function ProjectListPage() {
                   formState,
                 }) => {
                   const getOptions = () => {
-                    const test = ["test1", "test2", "test3"];
                     return users.map((val, index) => {
                       return (
-                        <MenuItem value={val.id} key={`${val.id}-${index}`}>
+                        <MenuItem value={val} key={`${val.id}-${index}`}>
+                          {/* <Checkbox checked={getValues("teamMembers")?.some((teamMember) => teamMember.id ===val.id)} /> */}
                           {val.name}
                         </MenuItem>
                       );
                     });
                   };
+                  // console.log(field.value);
                   return (
                     <FormControl>
                       <InputLabel>Team Members</InputLabel>
                       <Select
+                        // {...field}
                         multiple
                         sx={{ width: "250px" }}
                         variant="outlined"
                         label="Team Members"
                         labelId="teamMembers"
                         id="teamMembers"
-                        onChange={(event, val) => {
-                          onChange(event);
+                        onChange={onChange}
+                        value={getValues("teamMembers") ?? []}
+                        renderValue={(value) => {
+                          if(value.length > 0){
+                            return value.map(val => val.name).join(", ");
+                          }else{
+                            return "";
+                          }
                         }}
-                        value={value == null ? [""] : value}
+                        // defaultValue={[]}
                       >
                         {getOptions()}
                       </Select>

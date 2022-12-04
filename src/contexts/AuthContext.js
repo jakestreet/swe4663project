@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
     const provider = new GoogleAuthProvider();
     const [projectArray, setProjectArray] = useState([]);
     const [projectName, setProjectName] = useState("");
+    const [currentProject, setCurrentProject] = useState();
 
     async function signup(name, email, password) {
         try {
@@ -66,13 +67,14 @@ export function AuthProvider({ children }) {
         const querySnapshot = await getDocs(collection(db, "projects"));
         const tempProjectArray = [];
         querySnapshot.forEach((doc) => {
-          tempProjectArray.push(doc.data());
+        if(doc.data().teamMembers.some((person) => person.id === currentUser.email) || doc.data().projectOwner.id === currentUser.email){
+            tempProjectArray.push({...doc.data(), path: doc.ref.path});
+        }
         });
+        console.log(tempProjectArray);
         setProjectArray(tempProjectArray);
         
-        console.log("ran")
-        // if(tempProjectArray.length != 0)
-        //     return tempProjectArray[0].name;
+        console.log("ran");
       }
 
     useEffect(() => {
@@ -96,8 +98,10 @@ export function AuthProvider({ children }) {
         googleLogin,
         projectArray,
         projectName,
+        currentProject,
         setProjectName,
         getProjects,
+        setCurrentProject,
     }
 
     return (
